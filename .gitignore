@@ -51,3 +51,5 @@ cmake-build-debug/
 freeline/
 freeline.py
 freeline_project_description.json
+
+.vscode/

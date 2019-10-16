@@ -17,7 +17,7 @@ namespace skiplist {
 			}
 		};
 
-		~SkipList() { 
+		~SkipList() {
 			clear();
 			delete header_;
 			delete footer_;
@@ -38,9 +38,9 @@ namespace skiplist {
 
 		//清空跳跃表，注意头节点和尾节点会保留
 		void clear() {
-			Node<SortField, Value>* p = header_->level_[0].forward;
+			auto p = header_->level_[0].forward;
 			while (p != footer_) {
-				Node<SortField, Value>* q = p->level_[0].forward;
+				auto q = p->level_[0].forward;
 				delete p;
 				p = q;
 			}
@@ -60,11 +60,11 @@ namespace skiplist {
 			int nodeLevel = GetRandomLevel();
 			if (node_count_ == 0) {
 				nodeLevel = 1;
-			} else if (nodeLevel > max_level_) {
+			} else if (nodeLevel > max_level_ + 1) {
 				nodeLevel = max_level_ + 1;
 			}
 
-			Node<SortField, Value>* node = new Node<SortField, Value>(nodeLevel, sort_field, value);
+			auto node = new Node<SortField, Value>(nodeLevel, sort_field, value);
 			return node;
 		}
 
@@ -93,7 +93,7 @@ namespace skiplist {
 			*rank = 1;
 		}
 
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			//找到目标节点的前节点
 			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
@@ -118,7 +118,7 @@ namespace skiplist {
 	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::at(int rank) const {
 		int cur_rank = 0;
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			//找到目标节点的前节点
 			while (node->level_[i].forward != footer_ && cur_rank + node->level_[i].span < rank) {
@@ -144,7 +144,7 @@ namespace skiplist {
 	//获取最后一个节点
 	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::back() const {
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			while (node->level_[i].forward != footer_) {
 				node = node->level_[i].forward;
@@ -163,9 +163,9 @@ namespace skiplist {
 		Node<SortField, Value>* update[MAX_LEVEL];
 		int rank[MAX_LEVEL];
 
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
-			//rank[i-1]用来记录第i层达到插入位置的所跨越的节点总数,也就是该层最接近(小于)给定score的排名  
+			//rank[i-1]用来记录第i层达到插入位置的所跨越的节点总数,也就是该层最接近(小于)给定score的排名
 			//rank[i-1]初始化为上一层所跨越的节点总数,因为上一层已经加过
 			rank[i] = (i == (max_level_ - 1) ? 0 : rank[i+1]);
 
@@ -214,7 +214,7 @@ namespace skiplist {
 
 	template<typename SortField, typename Value>
 	void SkipList<SortField, Value>::DumpAllNodes() const {
-		for (const Node<SortField, Value>* itr = begin(); itr != nullptr; itr = itr->next()) {
+		for (const auto itr = begin(); itr != nullptr; itr = itr->next()) {
 			DumpNodeDetail(itr);
 			std::cout << std::endl;
 		}
@@ -228,7 +228,7 @@ namespace skiplist {
 			<< ",value:" << node->value_;
 		int node_level = node->node_level_ > max_level_ ? max_level_ : node->node_level_;
 		for (int i = 0; i <= node_level - 1; ++i) {
-			std::cout << ",[forward:" << i 
+			std::cout << ",[forward:" << i
 				<< ",span:" << node->level_[i].span
 				<< "]->" << node->level_[i].forward->sort_field_;
 		}
@@ -239,7 +239,7 @@ namespace skiplist {
 	bool SkipList<SortField, Value>::remove(const SortField& sort_field) {
 		//保存的是要删除的前一个节点
 		Node<SortField, Value>* update[MAX_LEVEL];
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
 				node = node->level_[i].forward;
