@@ -32,7 +32,11 @@ namespace skiplist {
 		};
 
 		const Node<SortField, Value>* next() const {
-			return level_[0].forward;
+			auto node = level_[0].forward;
+			//尾结点是整个链表中唯一一个高度为0的节点
+			if (node->node_level_ == 0)
+				return nullptr;
+			return node;
 		};
 
 	public:

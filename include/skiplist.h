@@ -47,8 +47,9 @@ namespace skiplist {
 			node_count_ = 0;
 			max_level_ = 0;
 		}
-		const Node<SortField, Value>* begin() const { return header_->level_[0].forward; }
-		const Node<SortField, Value>* end() const { return footer_; }
+		const Node<SortField, Value>* begin() const {
+			return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
+		}
 
 		void DumpAllNodes() const;
 		void DumpNodeDetail(const Node<SortField, Value>* node) const;
@@ -212,7 +213,7 @@ namespace skiplist {
 
 	template<typename SortField, typename Value>
 	void SkipList<SortField, Value>::DumpAllNodes() const {
-		for (const Node<SortField, Value>* itr = begin(); itr != end(); itr = itr->next()) {
+		for (const Node<SortField, Value>* itr = begin(); itr != nullptr; itr = itr->next()) {
 			DumpNodeDetail(itr);
 			std::cout << std::endl;
 		}
