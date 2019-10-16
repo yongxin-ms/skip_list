@@ -25,7 +25,11 @@ namespace skiplist {
 
 		const Node<SortField, Value>* find(const SortField& sort_field, int* rank = nullptr) const;
 		const Node<SortField, Value>* at(int rank) const;
+		const Node<SortField, Value>* begin() const {
+			return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
+		}
 		const Node<SortField, Value>* back() const;
+
 		bool insert(const SortField& sort_field, const Value& value);
 		bool remove(const SortField& sort_field);
 
@@ -46,9 +50,6 @@ namespace skiplist {
 			}
 			node_count_ = 0;
 			max_level_ = 0;
-		}
-		const Node<SortField, Value>* begin() const {
-			return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
 		}
 
 		void DumpAllNodes() const;
