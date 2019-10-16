@@ -16,7 +16,7 @@ namespace skiplist {
 	template<typename SortField, typename Value>
 	class Node {
 	public:
-		Node(int node_level, const SortField& sort_field, const Value& value) 
+		Node(int node_level, const SortField& sort_field, const Value& value)
 			: node_level_(node_level), sort_field_(sort_field), value_(value) {
 			if (node_level > 0) {
 				level_ = new Level<SortField, Value>[node_level];

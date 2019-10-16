@@ -29,10 +29,8 @@ namespace skiplist {
 			return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
 		}
 		const Node<SortField, Value>* back() const;
-
 		bool insert(const SortField& sort_field, const Value& value);
 		bool remove(const SortField& sort_field);
-
 		int max_level() const { return max_level_; };
 		int size() const { return node_count_; };
 
@@ -63,7 +61,6 @@ namespace skiplist {
 			} else if (nodeLevel > max_level_ + 1) {
 				nodeLevel = max_level_ + 1;
 			}
-
 			auto node = new Node<SortField, Value>(nodeLevel, sort_field, value);
 			return node;
 		}
@@ -74,7 +71,6 @@ namespace skiplist {
 			while (level < MAX_LEVEL && Random::RandomInt(0, 1) == 0) {
 				level++;
 			}
-
 			return level;
 		}
 
@@ -83,21 +79,20 @@ namespace skiplist {
 		int node_count_;					//节点数量，不包括头节点和尾节点
 		Node<SortField, Value>* header_;
 		Node<SortField, Value>* footer_;
-
 		static const int MAX_LEVEL = 24;	//最多支持1000万的数据量
 	};
 
 	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::find(const SortField& sort_field, int* rank) const {
-		if (rank != nullptr) {
+		if (rank != nullptr)
 			*rank = 1;
-		}
-
 		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			//找到目标节点的前节点
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
-				if (rank != nullptr) *rank += node->level_[i].span;
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
+				if (rank != nullptr)
+					*rank += node->level_[i].span;
 				node = node->level_[i].forward;
 			}
 		}
@@ -105,7 +100,6 @@ namespace skiplist {
 		//如果该跳跃表为空，头节点就会直接指向尾节点
 		if (node == footer_)
 			return nullptr;
-
 		node = node->level_[0].forward;
 		if (node == footer_)
 			return nullptr;
@@ -121,7 +115,8 @@ namespace skiplist {
 		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			//找到目标节点的前节点
-			while (node->level_[i].forward != footer_ && cur_rank + node->level_[i].span < rank) {
+			while (node->level_[i].forward != footer_ &&
+			cur_rank + node->level_[i].span < rank) {
 				cur_rank += node->level_[i].span;
 				node = node->level_[i].forward;
 			}
@@ -130,10 +125,8 @@ namespace skiplist {
 		//如果该跳跃表为空，头节点就会直接指向尾节点
 		if (node == footer_)
 			return nullptr;
-
 		cur_rank += node->level_[0].span;
 		node = node->level_[0].forward;
-
 		if (node == footer_)
 			return nullptr;
 		if (cur_rank != rank)
@@ -161,16 +154,17 @@ namespace skiplist {
 	template<typename SortField, typename Value>
 	bool SkipList<SortField, Value>::insert(const SortField& sort_field, const Value& value) {
 		Node<SortField, Value>* update[MAX_LEVEL];
-		int rank[MAX_LEVEL];
+		int span[MAX_LEVEL];
 
 		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
-			//rank[i-1]用来记录第i层达到插入位置的所跨越的节点总数,也就是该层最接近(小于)给定score的排名
-			//rank[i-1]初始化为上一层所跨越的节点总数,因为上一层已经加过
-			rank[i] = (i == (max_level_ - 1) ? 0 : rank[i+1]);
+			//span[i-1]用来记录第i层达到插入位置的跨度,也是该层最接近(小于)给定score的排名
+			//span[i-1]初始化为上一层所跨越的节点总数,因为上一层已经加过
+			span[i] = (i == (max_level_ - 1) ? 0 : span[i+1]);
 
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
-				rank[i] += node->level_[i].span;
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
+				span[i] += node->level_[i].span;
 				node = node->level_[i].forward;
 			}
 			update[i] = node;
@@ -183,13 +177,11 @@ namespace skiplist {
 			return false;
 		}
 
-		//创建新节点
-		Node<SortField, Value>* newNode = CreateNode(sort_field, value);
-
-		//每次最多增加一层
+		auto newNode = CreateNode(sort_field, value);
 		if (newNode->node_level_ > max_level_) {
+			//每次最多增加一层
 			max_level_ = newNode->node_level_;
-			rank[max_level_ - 1] = 0;
+			span[max_level_ - 1] = 0;
 			update[max_level_ - 1] = header_;
 			update[max_level_ - 1]->level_[max_level_ - 1].span = size();
 		}
@@ -200,8 +192,8 @@ namespace skiplist {
 			newNode->level_[i].forward = node->level_[i].forward;
 			node->level_[i].forward = newNode;
 
-			newNode->level_[i].span = node->level_[i].span - (rank[0] - rank[i]);
-			node->level_[i].span = rank[0] - rank[i] + 1;
+			newNode->level_[i].span = node->level_[i].span - (span[0] - span[i]);
+			node->level_[i].span = span[0] - span[i] + 1;
 		}
 
 		for (int i = max_level_ - 1; i >= newNode->node_level_; --i) {
@@ -241,7 +233,8 @@ namespace skiplist {
 		Node<SortField, Value>* update[MAX_LEVEL];
 		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
 				node = node->level_[i].forward;
 			}
 			update[i] = node;
@@ -249,11 +242,9 @@ namespace skiplist {
 
 		if (node == footer_)
 			return false;
-
 		node = node->level_[0].forward;
 		if (node == footer_)
 			return false;
-
 		//如果节点不存在
 		if (node->sort_field_ != sort_field) {
 			return false;
@@ -262,16 +253,21 @@ namespace skiplist {
 		//现在node已经被找到，将要被删除，
 		for (int i = 0; i <= max_level_ - 1; ++i) {
 			if (update[i]->level_[i].forward != node) {
+				//跳过了将要被删除的节点，所以跨度直接-1就好
 				update[i]->level_[i].span--;
 			} else {
+				//连接着将要被删除的节点，需要改一下指针，更新一下跨度
 				update[i]->level_[i].forward = node->level_[i].forward;
 				update[i]->level_[i].span += (node->level_[i].span - 1);
 			}
 		}
 		delete node;
 
-		//更新max_level_的值，因为有可能在移除一个节点之后，max_level_值会发生变化，及时降低可提高性能
-		while (max_level_ > 0 && header_->level_[max_level_ - 1].forward == footer_) {
+		//更新max_level_的值，因为有可能在移除一个节点之后，max_level_值会发生变化，
+		//及时降低可提高性能
+		while (max_level_ > 0 &&
+		header_->level_[max_level_ - 1].forward == footer_) {
+			//如果头结点连着尾节点，这个高度是浪费的
 			--max_level_;
 		}
 
