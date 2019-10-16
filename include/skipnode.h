@@ -18,8 +18,8 @@ namespace skiplist {
 	public:
 		Node(int node_level, const SortField& sort_field, const Value& value) 
 			: node_level_(node_level), sort_field_(sort_field), value_(value) {
-			if (node_level_ > 0) {
-				level_ = new Level<SortField, Value>[node_level_];
+			if (node_level > 0) {
+				level_ = new Level<SortField, Value>[node_level];
 			}
 			else {
 				level_ = nullptr;
@@ -40,10 +40,10 @@ namespace skiplist {
 		};
 
 	public:
+		const int node_level_; //从1开始
 		const SortField sort_field_;
 		const Value value_;
-		const int node_level_; //从1开始
-		Level<SortField, Value>* level_;
+		Level<SortField, Value>* level_ = nullptr;
 	};
 }
 
