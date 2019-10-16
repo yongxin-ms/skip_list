@@ -19,7 +19,7 @@ void TestInsertTail(skiplist::SkipList<int, int>& skip_list) {
 		}
 
 		int this_rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(sort_field, &this_rank);
+		auto searchResult = skip_list.find(sort_field, &this_rank);
 		if (searchResult == nullptr) {
 			std::cout << "error" << std::endl;
 		}
@@ -38,9 +38,9 @@ void TestInsertTail(skiplist::SkipList<int, int>& skip_list) {
 	}
 
 	int i = 1;
-	for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++i) {
+	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 		if (searchResult == nullptr) {
 			std::cout << "error" << std::endl;
 		}
@@ -68,7 +68,7 @@ void TestInsertHead(skiplist::SkipList<int, int>& skip_list) {
 		}
 
 		int this_rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(sort_field, &this_rank);
+		auto searchResult = skip_list.find(sort_field, &this_rank);
 		if (searchResult == nullptr) {
 			std::cout << "error" << std::endl;
 		}
@@ -83,9 +83,9 @@ void TestInsertHead(skiplist::SkipList<int, int>& skip_list) {
 	}
 
 	int i = 1;
-	for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++i) {
+	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 		if (searchResult == nullptr) {
 			std::cout << "error" << std::endl;
 		}
@@ -111,6 +111,8 @@ void TestInsertRandom(skiplist::SkipList<int, int>& skip_list) {
 		auto sort_field = *itr;
 		auto value = *itr;
 		bool suc = skip_list.insert(sort_field, value);
+		if (!suc)
+			std::cout << "error" << std::endl;
 	}
 
 	if (skip_list.size() != TEST_SKIP_LIST_SIZE) {
@@ -139,9 +141,9 @@ void TestInsertRandom(skiplist::SkipList<int, int>& skip_list) {
 	}
 
 	i = 1;
-	for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++i) {
+	for (node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 		if (searchResult == nullptr) {
 			std::cout << "error" << std::endl;
 		}
@@ -164,6 +166,8 @@ void CreateSkipList(skiplist::SkipList<int, int>& skip_list) {
 		auto sort_field = *itr;
 		auto value = *itr;
 		bool suc = skip_list.insert(sort_field, value);
+		if (!suc)
+			std::cout << "error" << std::endl;
 	}
 }
 
@@ -196,9 +200,9 @@ void TestRemoveFromHead(skiplist::SkipList<int, int>& skip_list) {
 		}
 
 		int m = 1;
-		for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++m) {
+		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 			if (searchResult == nullptr) {
 				std::cout << "error" << std::endl;
 			}
@@ -257,9 +261,9 @@ void TestRemoveFromTail(skiplist::SkipList<int, int>& skip_list) {
 		}
 
 		int m = 1;
-		for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++m) {
+		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 			if (searchResult == nullptr) {
 				std::cout << "error" << std::endl;
 			}
@@ -287,7 +291,7 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 	std::random_shuffle(vSort.begin(), vSort.end());
 	for (auto itr = vSort.begin(); itr != vSort.end(); ++itr) {
 		auto sort_field = *itr;
-		auto value = *itr;
+		//auto value = *itr;
 		
 		bool suc = skip_list.remove(sort_field);
 		if (!suc) {
@@ -295,9 +299,9 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 		}
 
 		int m = 1;
-		for (auto it = skip_list.begin(); it != nullptr; it = it->next(), ++m) {
+		for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			const skiplist::Node<int, int>* searchResult = skip_list.find(it->sort_field_, &this_rank);
+			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
 			if (searchResult == nullptr) {
 				std::cout << "error" << std::endl;
 			}
@@ -332,11 +336,11 @@ int main() {
 	CreateSkipList(skip_list);
 
 	//测试遍历与查找
-	for (const skiplist::Node<int, int>* itr = skip_list.begin(); itr != nullptr; itr = itr->next())
+	for (auto node = skip_list.begin(); node != nullptr; node = node->next())
 	{
-		int sort_field = itr->sort_field_;
+		int sort_field = node->sort_field_;
 		int rank = 0;
-		const skiplist::Node<int, int>* searchResult = skip_list.find(sort_field, &rank);
+		auto searchResult = skip_list.find(sort_field, &rank);
 		if (searchResult == nullptr) {
 			std::cout << "error: search failure, " << sort_field << std::endl;
 		}
