@@ -1,6 +1,6 @@
-#include <iostream>
+﻿#include <iostream>
 #include <algorithm>
-#include "../include/skiplist.h"
+#include "skiplist.h"
 
 #define TEST_SKIP_LIST_SIZE 9
 
