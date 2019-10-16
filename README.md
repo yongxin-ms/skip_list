@@ -1,4 +1,3 @@
-
 ## 简介
 
 SkipList(跳表)这种数据结构是由William Pugh于1990年在在 Communications of the ACM June 1990, 33(6) 668-676 发表了Skip lists: a probabilistic alternative to balanced trees，在其中详细描述了他的工作。由论文标题可知，SkipList的设计初衷是作为替换平衡树的一种选择。
@@ -191,4 +190,5 @@ SkipList还有一个优势就是实现简单，SkipList的实现只花了2个小
 		return true;
 	};
 ```
+
 
