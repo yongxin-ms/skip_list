@@ -79,7 +79,7 @@ namespace skiplist {
 		int node_count_;					//节点数量，不包括头节点和尾节点
 		Node<SortField, Value>* header_;
 		Node<SortField, Value>* footer_;
-		static const int MAX_LEVEL = 24;	//最多支持1000万的数据量
+		static const int MAX_LEVEL = 32;	//最高层数，支持42亿个元素Log(N)的时间复杂度
 	};
 
 	template<typename SortField, typename Value>
