@@ -111,6 +111,9 @@ namespace skiplist {
 	//获取排行榜第rank名，从1开始
 	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::at(int rank) const {
+		if (rank <= 0 || rank > node_count_)
+			return nullptr;
+
 		int cur_rank = 0;
 		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {

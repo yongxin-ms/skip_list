@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <algorithm>
+#include <assert.h>
 #include "skiplist.h"
 
 #define TEST_SKIP_LIST_SIZE 9
@@ -9,48 +10,34 @@ void TestInsertTail(skiplist::SkipList<int, int>& skip_list) {
 	for (int i = 1; i <= TEST_SKIP_LIST_SIZE; i++) {
 		auto sort_field = i;
 		auto value = i;
-		bool suc = skip_list.insert(sort_field, value);
-		if (!suc) {
-			std::cout << "error" << std::endl;
-		}
 
-		if (skip_list.size() != i) {
-			std::cout << "error" << std::endl;
-		}
+		bool suc = skip_list.insert(sort_field, value);
+		assert(suc);
+		assert(skip_list.size() == i);
 
 		int this_rank = 0;
 		auto searchResult = skip_list.find(sort_field, &this_rank);
-		if (searchResult == nullptr) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (this_rank != i) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (searchResult != skip_list.back()) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(i) != searchResult) {
-			std::cout << "error" << std::endl;
-		}
+		assert(searchResult != nullptr);
+		assert(this_rank == i);
+		assert(skip_list.back() == searchResult);
+		assert(skip_list.at(i) == searchResult);
 	}
 
 	int i = 1;
 	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
 		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		if (searchResult == nullptr) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (this_rank != i) {
-			std::cout << "error" << std::endl;
-		}
+		assert(searchResult != nullptr);
+		assert(this_rank == i);
 	}
 
 	skip_list.clear();
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 //顺序从头部插入
@@ -59,43 +46,31 @@ void TestInsertHead(skiplist::SkipList<int, int>& skip_list) {
 		auto sort_field = i;
 		auto value = i;
 		bool suc = skip_list.insert(sort_field, value);
-		if (!suc) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.size() != TEST_SKIP_LIST_SIZE + 1 - i) {
-			std::cout << "error" << std::endl;
-		}
+		assert(suc);
+		assert(skip_list.size() == TEST_SKIP_LIST_SIZE + 1 - i);
 
 		int this_rank = 0;
 		auto searchResult = skip_list.find(sort_field, &this_rank);
-		if (searchResult == nullptr) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (this_rank != 1) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(1) != searchResult) {
-			std::cout << "error" << std::endl;
-		}
+		assert(searchResult != nullptr);
+		assert(this_rank == 1);
+		assert(skip_list.at(1) == searchResult);
 	}
 
 	int i = 1;
 	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
 		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		if (searchResult == nullptr) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (this_rank != i) {
-			std::cout << "error" << std::endl;
-		}
+		assert(searchResult != nullptr);
+		assert(this_rank == i);
 	}
 
 	skip_list.clear();
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 //乱序插入
@@ -111,49 +86,38 @@ void TestInsertRandom(skiplist::SkipList<int, int>& skip_list) {
 		auto sort_field = *itr;
 		auto value = *itr;
 		bool suc = skip_list.insert(sort_field, value);
-		if (!suc)
-			std::cout << "error" << std::endl;
+		assert(suc);
 	}
 
-	if (skip_list.size() != TEST_SKIP_LIST_SIZE) {
-		std::cout << "error" << std::endl;
-	}
+	assert(skip_list.size() == TEST_SKIP_LIST_SIZE);
 
 	auto node = skip_list.begin();
-	if (node == nullptr || node->value_ != 1) {
-		std::cout << "error" << std::endl;
-	}
+	assert(node != nullptr && node->value_ == 1);
 
 	node = skip_list.back();
-	if (node == nullptr || node->value_ != TEST_SKIP_LIST_SIZE) {
-		std::cout << "error" << std::endl;
-	}
+	assert(node != nullptr && node->value_ == TEST_SKIP_LIST_SIZE);
 
 	int i = 1;
 	for (node = skip_list.begin(); node != nullptr; node = node->next(), i++) {
-		if (node->value_ != i) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(i) != node) {
-			std::cout << "error" << std::endl;
-		}
+		assert(node->value_ == i);
+		assert(skip_list.at(i) == node);
 	}
 
 	i = 1;
 	for (node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
 		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		if (searchResult == nullptr) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (this_rank != i) {
-			std::cout << "error" << std::endl;
-		}
+		assert(searchResult != nullptr);
+		assert(this_rank == i);
 	}
 
 	skip_list.clear();
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 void CreateSkipList(skiplist::SkipList<int, int>& skip_list) {
@@ -166,9 +130,16 @@ void CreateSkipList(skiplist::SkipList<int, int>& skip_list) {
 		auto sort_field = *itr;
 		auto value = *itr;
 		bool suc = skip_list.insert(sort_field, value);
-		if (!suc)
-			std::cout << "error" << std::endl;
+		assert(suc);
 	}
+
+	assert(skip_list.size() == TEST_SKIP_LIST_SIZE);
+	assert(skip_list.begin() != nullptr);
+	assert(skip_list.back() != nullptr);
+	assert(skip_list.max_level() > 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == skip_list.begin());
+	assert(skip_list.at(TEST_SKIP_LIST_SIZE) == skip_list.back());
 }
 
 //从头部删除
@@ -176,46 +147,30 @@ void TestRemoveFromHead(skiplist::SkipList<int, int>& skip_list) {
 	CreateSkipList(skip_list);
 	for (int i = 1; i <= TEST_SKIP_LIST_SIZE; i++) {
 		auto node = skip_list.begin();
-		if (node == nullptr) {
-			std::cout << "error" << std::endl;
-			break;
-		}
-
-		if (node->value_ != i) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(1) != node) {
-			std::cout << "error" << std::endl;
-		}
+		assert(node != nullptr);
+		assert(node->value_ == i);
+		assert(skip_list.at(1) == node);
 
 		auto sort_field = node->sort_field_;
 		bool suc = skip_list.remove(sort_field);
-		if (!suc) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.size() != TEST_SKIP_LIST_SIZE - i) {
-			std::cout << "error" << std::endl;
-		}
+		assert(suc);
+		assert(skip_list.size() == TEST_SKIP_LIST_SIZE - i);
 
 		int m = 1;
 		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
 			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			if (searchResult == nullptr) {
-				std::cout << "error" << std::endl;
-			}
-
-			if (this_rank != m) {
-				std::cout << "error" << std::endl;
-			}
+			assert(searchResult != nullptr);
+			assert(this_rank == m);
 		}
 	}
 
-	if (skip_list.size() != 0) {
-		std::cout << "error" << std::endl;
-	}
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 //从尾部删除
@@ -223,60 +178,35 @@ void TestRemoveFromTail(skiplist::SkipList<int, int>& skip_list) {
 	CreateSkipList(skip_list);
 	for (int i = TEST_SKIP_LIST_SIZE; i >= 1; i--) {
 		auto node = skip_list.begin();
-		if (node == nullptr) {
-			std::cout << "error" << std::endl;
-			break;
-		}
-
-		if (node->value_ != 1) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(1) != node) {
-			std::cout << "error" << std::endl;
-		}
+		assert(node != nullptr);
+		assert(node->value_ == 1);
+		assert(skip_list.at(1) == node);
 
 		node = skip_list.back();
-		if (node == nullptr) {
-			std::cout << "error" << std::endl;
-			break;
-		}
-
-		if (node->value_ != i) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.at(i) != node) {
-			std::cout << "error" << std::endl;
-		}
+		assert(node != nullptr);
+		assert(node->value_ == i);
+		assert(skip_list.at(i) == node);
 
 		auto sort_field = node->sort_field_;
 		bool suc = skip_list.remove(sort_field);
-		if (!suc) {
-			std::cout << "error" << std::endl;
-		}
-
-		if (skip_list.size() != i - 1) {
-			std::cout << "error" << std::endl;
-		}
+		assert(suc);
+		assert(skip_list.size() == i - 1);
 
 		int m = 1;
 		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
 			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			if (searchResult == nullptr) {
-				std::cout << "error" << std::endl;
-			}
-
-			if (this_rank != m) {
-				std::cout << "error" << std::endl;
-			}
+			assert(searchResult != nullptr);
+			assert(this_rank == m);
 		}
 	}
 
-	if (skip_list.size() != 0) {
-		std::cout << "error" << std::endl;
-	}
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 //随机删除
@@ -294,27 +224,23 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 		//auto value = *itr;
 		
 		bool suc = skip_list.remove(sort_field);
-		if (!suc) {
-			std::cout << "error" << std::endl;
-		}
+		assert(suc);
 
 		int m = 1;
 		for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
 			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			if (searchResult == nullptr) {
-				std::cout << "error" << std::endl;
-			}
-
-			if (this_rank != m) {
-				std::cout << "error" << std::endl;
-			}
+			assert(searchResult != nullptr);
+			assert(this_rank == m);
 		}
 	}
 
-	if (skip_list.size() != 0) {
-		std::cout << "error" << std::endl;
-	}
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
 }
 
 
@@ -341,9 +267,7 @@ int main() {
 		int sort_field = node->sort_field_;
 		int rank = 0;
 		auto searchResult = skip_list.find(sort_field, &rank);
-		if (searchResult == nullptr) {
-			std::cout << "error: search failure, " << sort_field << std::endl;
-		}
+		assert(searchResult != nullptr);
 	}
 
 	//从头开始删除
@@ -351,11 +275,16 @@ int main() {
 	{
 		int sort_field = skip_list.begin()->sort_field_;
 		bool removeResult = skip_list.remove(sort_field);
-		if (!removeResult) {
-			std::cout << "removed failure, " << sort_field  << std::endl;
-		}
+		assert(removeResult);
 	}
 
-	std::cout << "skiplist test now ends..." << std::endl;
+	assert(skip_list.size() == 0);
+	assert(skip_list.begin() == nullptr);
+	assert(skip_list.back() == nullptr);
+	assert(skip_list.max_level() == 0);
+	assert(skip_list.at(0) == nullptr);
+	assert(skip_list.at(1) == nullptr);
+
+	std::cout << "skiplist test now finished..." << std::endl;
     return 0;
 }
