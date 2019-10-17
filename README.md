@@ -36,17 +36,17 @@ SkipList还有一个优势就是实现简单。
 
 既然算法都有了，实现也不在话下，如下是C++实现:
 ```
-template<typename SortField, typename Value>
+	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::find(const SortField& sort_field, int* rank) const {
-		if (rank != nullptr) {
+		if (rank != nullptr)
 			*rank = 1;
-		}
-
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
 			//找到目标节点的前节点
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
-				if (rank != nullptr) *rank += node->level_[i].span;
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
+				if (rank != nullptr)
+					*rank += node->level_[i].span;
 				node = node->level_[i].forward;
 			}
 		}
@@ -54,7 +54,6 @@ template<typename SortField, typename Value>
 		//如果该跳跃表为空，头节点就会直接指向尾节点
 		if (node == footer_)
 			return nullptr;
-
 		node = node->level_[0].forward;
 		if (node == footer_)
 			return nullptr;
@@ -78,7 +77,8 @@ template<typename SortField, typename Value>
 
 - 查找合适的插入位置，比如上图中要插入key为17的结点，就需要一路查找到12,由于12 < 17,而12的下一个结点19 > 17,因而满足条件
 - 创建新结点，并且产生一个在1~MAX_LEVEL之间的随机level值作为该结点的level
-- 调整指针指向
+- 调整指针
+- 调整跨度
 
 
 
@@ -88,26 +88,27 @@ template<typename SortField, typename Value>
 - 1/4的概率有2层
 - 1/8的概率有3层
 - 1/16的概率有4层
-- 以此类推，直到达到最高层数（在本组件中为24层）或者当前跳跃表最高层数+1为止。
+- 以此类推，直到达到最高层数（在本组件中为32层）或者当前跳跃表最高层数+1为止。
 
 
 
 插入的代码如下:
 
 ```cpp
-template<typename SortField, typename Value>
+	template<typename SortField, typename Value>
 	bool SkipList<SortField, Value>::insert(const SortField& sort_field, const Value& value) {
 		Node<SortField, Value>* update[MAX_LEVEL];
-		int rank[MAX_LEVEL];
+		int span[MAX_LEVEL];
 
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
-			//rank[i-1]用来记录第i层达到插入位置的所跨越的节点总数,也就是该层最接近(小于)给定score的排名  
-			//rank[i-1]初始化为上一层所跨越的节点总数,因为上一层已经加过
-			rank[i] = (i == (max_level_ - 1) ? 0 : rank[i+1]);
+			//span[i-1]用来记录第i层达到插入位置的跨度,也是该层最接近(小于)给定score的排名
+			//span[i-1]初始化为上一层所跨越的节点总数,因为上一层已经加过
+			span[i] = (i == (max_level_ - 1) ? 0 : span[i+1]);
 
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
-				rank[i] += node->level_[i].span;
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
+				span[i] += node->level_[i].span;
 				node = node->level_[i].forward;
 			}
 			update[i] = node;
@@ -120,13 +121,11 @@ template<typename SortField, typename Value>
 			return false;
 		}
 
-		//创建新节点
-		Node<SortField, Value>* newNode = CreateNode(sort_field, value);
-
-		//每次最多增加一层
+		auto newNode = CreateNode(sort_field, value);
 		if (newNode->node_level_ > max_level_) {
+			//每次最多增加一层
 			max_level_ = newNode->node_level_;
-			rank[max_level_ - 1] = 0;
+			span[max_level_ - 1] = 0;
 			update[max_level_ - 1] = header_;
 			update[max_level_ - 1]->level_[max_level_ - 1].span = size();
 		}
@@ -137,8 +136,8 @@ template<typename SortField, typename Value>
 			newNode->level_[i].forward = node->level_[i].forward;
 			node->level_[i].forward = newNode;
 
-			newNode->level_[i].span = node->level_[i].span - (rank[0] - rank[i]);
-			node->level_[i].span = rank[0] - rank[i] + 1;
+			newNode->level_[i].span = node->level_[i].span - (span[0] - span[i]);
+			node->level_[i].span = span[0] - span[i] + 1;
 		}
 
 		for (int i = max_level_ - 1; i >= newNode->node_level_; --i) {
@@ -155,13 +154,15 @@ template<typename SortField, typename Value>
 
 移除结点的示意图如下:
 
-<img src="res/skiplist_remove.png" width="1000" height="280"/>
+<img src="res/skiplist_remove.jpg" width="742" height="246"/>
 
-移除结点其实很简单,就分以下3步:
+移除结点分为以下几个步骤：
 
-- 查找到指定的结点，如果没找到则返回
+- 从最高层开始一直到第一层，查找指定的结点，并且记录查找路径
 - 调整指针指向
+- 调整跨度
 - 释放结点空间
+- 如果有必要的话，调整最高层数
 
 代码如下:
 ``` cpp
@@ -169,9 +170,10 @@ template<typename SortField, typename Value>
 	bool SkipList<SortField, Value>::remove(const SortField& sort_field) {
 		//保存的是要删除的前一个节点
 		Node<SortField, Value>* update[MAX_LEVEL];
-		Node<SortField, Value>* node = header_;
+		auto node = header_;
 		for (int i = max_level_ - 1; i >= 0; --i) {
-			while (node->level_[i].forward != footer_ && node->level_[i].forward->sort_field_ < sort_field) {
+			while (node->level_[i].forward != footer_ &&
+			node->level_[i].forward->sort_field_ < sort_field) {
 				node = node->level_[i].forward;
 			}
 			update[i] = node;
@@ -179,11 +181,9 @@ template<typename SortField, typename Value>
 
 		if (node == footer_)
 			return false;
-
 		node = node->level_[0].forward;
 		if (node == footer_)
 			return false;
-
 		//如果节点不存在
 		if (node->sort_field_ != sort_field) {
 			return false;
@@ -192,16 +192,21 @@ template<typename SortField, typename Value>
 		//现在node已经被找到，将要被删除，
 		for (int i = 0; i <= max_level_ - 1; ++i) {
 			if (update[i]->level_[i].forward != node) {
+				//跳过了将要被删除的节点，所以跨度直接-1就好
 				update[i]->level_[i].span--;
 			} else {
+				//连接着将要被删除的节点，需要改一下指针，更新一下跨度
 				update[i]->level_[i].forward = node->level_[i].forward;
 				update[i]->level_[i].span += (node->level_[i].span - 1);
 			}
 		}
 		delete node;
 
-		//更新max_level_的值，因为有可能在移除一个节点之后，max_level_值会发生变化，及时降低可提高性能
-		while (max_level_ > 0 && header_->level_[max_level_ - 1].forward == footer_) {
+		//更新max_level_的值，因为有可能在移除一个节点之后，max_level_值会发生变化，
+		//及时降低可提高性能
+		while (max_level_ > 0 &&
+		header_->level_[max_level_ - 1].forward == footer_) {
+			//如果头结点连着尾节点，这个高度是浪费的
 			--max_level_;
 		}
 
