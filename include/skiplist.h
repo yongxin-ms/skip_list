@@ -1,6 +1,4 @@
-﻿#ifndef SKIP_LIST_H_
-#define SKIP_LIST_H_
-
+﻿#pragma once
 #include <iostream>
 #include "skipnode.h"
 #include "random.h"
@@ -12,9 +10,8 @@ namespace skiplist {
 		SkipList() : max_level_(0), node_count_(0) {
 			header_ = new Node<SortField, Value>(MAX_LEVEL, SortField(), Value());
 			footer_ = new Node<SortField, Value>(0, SortField(), Value());
-			for (int i = 0; i < MAX_LEVEL; i++) {
+			for (int i = 0; i < MAX_LEVEL; i++)
 				header_->level_[i].forward = footer_;
-			}
 		};
 
 		~SkipList() {
@@ -49,9 +46,6 @@ namespace skiplist {
 			node_count_ = 0;
 			max_level_ = 0;
 		}
-
-		void DumpAllNodes() const;
-		void DumpNodeDetail(const Node<SortField, Value>* node) const;
 
 	private:
 		Node<SortField, Value>* CreateNode(const SortField& sort_field, const Value& value) const {
@@ -208,29 +202,6 @@ namespace skiplist {
 	};
 
 	template<typename SortField, typename Value>
-	void SkipList<SortField, Value>::DumpAllNodes() const {
-		for (const auto itr = begin(); itr != nullptr; itr = itr->next()) {
-			DumpNodeDetail(itr);
-			std::cout << std::endl;
-		}
-		std::cout << std::endl;
-	}
-
-	template<typename SortField, typename Value>
-	void SkipList<SortField, Value>::DumpNodeDetail(const Node<SortField, Value>* node) const {
-		std::cout << "level:" << node->node_level_
-			<< ",sort:" << node->sort_field_
-			<< ",value:" << node->value_;
-		int node_level = node->node_level_ > max_level_ ? max_level_ : node->node_level_;
-		for (int i = 0; i <= node_level - 1; ++i) {
-			std::cout << ",[forward:" << i
-				<< ",span:" << node->level_[i].span
-				<< "]->" << node->level_[i].forward->sort_field_;
-		}
-		std::cout << " ";
-	}
-
-	template<typename SortField, typename Value>
 	bool SkipList<SortField, Value>::remove(const SortField& sort_field) {
 		//保存的是要删除的前一个节点
 		Node<SortField, Value>* update[MAX_LEVEL];
@@ -278,4 +249,3 @@ namespace skiplist {
 		return true;
 	};
 }
-#endif //SKIP_LIST_H_

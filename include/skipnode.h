@@ -1,5 +1,4 @@
-﻿#ifndef SKIP_LIST_NODE_H_
-#define SKIP_LIST_NODE_H_
+﻿#pragma once
 
 namespace skiplist {
 	template<typename SortField, typename Value>
@@ -18,12 +17,10 @@ namespace skiplist {
 	public:
 		Node(int node_level, const SortField& sort_field, const Value& value)
 			: node_level_(node_level), sort_field_(sort_field), value_(value) {
-			if (node_level > 0) {
+			if (node_level > 0)
 				level_ = new Level<SortField, Value>[node_level];
-			}
-			else {
+			else
 				level_ = nullptr;
-			}
 		};
 
 		~Node() {
@@ -46,5 +43,3 @@ namespace skiplist {
 		Level<SortField, Value>* level_ = nullptr;
 	};
 }
-
-#endif //SKIP_LIST_NODE_H_

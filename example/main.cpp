@@ -255,10 +255,6 @@ int main() {
 	TestRemoveFromTail(skip_list);
 	TestRemoveRandom(skip_list);
 
-//	skip_list.DumpAllNodes();
-// 	skip_list.DumpAllNodes();
-// 	skip_list.DumpNodeHight();
-
 	CreateSkipList(skip_list);
 
 	//测试遍历与查找

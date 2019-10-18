@@ -1,5 +1,4 @@
-﻿#ifndef SKIP_LIST_RANDOM_H_
-#define SKIP_LIST_RANDOM_H_
+﻿#pragma once
 #include <random>
 
 namespace skiplist {
@@ -16,5 +15,3 @@ namespace skiplist {
 		}
 	};
 }
-
-#endif //SKIP_LIST_RANDOM_H_
