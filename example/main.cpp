@@ -16,18 +16,18 @@ void TestInsertTail(skiplist::SkipList<int, int>& skip_list) {
 		assert(skip_list.size() == i);
 
 		int this_rank = 0;
-		auto searchResult = skip_list.find(sort_field, &this_rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(sort_field, &this_rank);
+		assert(search_result != nullptr);
 		assert(this_rank == i);
-		assert(skip_list.back() == searchResult);
-		assert(skip_list.at(i) == searchResult);
+		assert(skip_list.back() == search_result);
+		assert(skip_list.at(i) == search_result);
 	}
 
 	int i = 1;
 	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(node->sort_field_, &this_rank);
+		assert(search_result != nullptr);
 		assert(this_rank == i);
 	}
 
@@ -50,17 +50,17 @@ void TestInsertHead(skiplist::SkipList<int, int>& skip_list) {
 		assert(skip_list.size() == TEST_SKIP_LIST_SIZE + 1 - i);
 
 		int this_rank = 0;
-		auto searchResult = skip_list.find(sort_field, &this_rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(sort_field, &this_rank);
+		assert(search_result != nullptr);
 		assert(this_rank == 1);
-		assert(skip_list.at(1) == searchResult);
+		assert(skip_list.at(1) == search_result);
 	}
 
 	int i = 1;
 	for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(node->sort_field_, &this_rank);
+		assert(search_result != nullptr);
 		assert(this_rank == i);
 	}
 
@@ -106,8 +106,8 @@ void TestInsertRandom(skiplist::SkipList<int, int>& skip_list) {
 	i = 1;
 	for (node = skip_list.begin(); node != nullptr; node = node->next(), ++i) {
 		int this_rank = 0;
-		auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(node->sort_field_, &this_rank);
+		assert(search_result != nullptr);
 		assert(this_rank == i);
 	}
 
@@ -159,8 +159,8 @@ void TestRemoveFromHead(skiplist::SkipList<int, int>& skip_list) {
 		int m = 1;
 		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			assert(searchResult != nullptr);
+			auto search_result = skip_list.find(node->sort_field_, &this_rank);
+			assert(search_result != nullptr);
 			assert(this_rank == m);
 		}
 	}
@@ -195,8 +195,8 @@ void TestRemoveFromTail(skiplist::SkipList<int, int>& skip_list) {
 		int m = 1;
 		for (node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			assert(searchResult != nullptr);
+			auto search_result = skip_list.find(node->sort_field_, &this_rank);
+			assert(search_result != nullptr);
 			assert(this_rank == m);
 		}
 	}
@@ -229,8 +229,8 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 		int m = 1;
 		for (auto node = skip_list.begin(); node != nullptr; node = node->next(), ++m) {
 			int this_rank = 0;
-			auto searchResult = skip_list.find(node->sort_field_, &this_rank);
-			assert(searchResult != nullptr);
+			auto search_result = skip_list.find(node->sort_field_, &this_rank);
+			assert(search_result != nullptr);
 			assert(this_rank == m);
 		}
 	}
@@ -262,8 +262,8 @@ int main() {
 	{
 		int sort_field = node->sort_field_;
 		int rank = 0;
-		auto searchResult = skip_list.find(sort_field, &rank);
-		assert(searchResult != nullptr);
+		auto search_result = skip_list.find(sort_field, &rank);
+		assert(search_result != nullptr);
 	}
 
 	//从头开始删除

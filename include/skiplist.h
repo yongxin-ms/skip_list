@@ -7,66 +7,23 @@ namespace skiplist {
 	template<typename SortField, typename Value>
 	class SkipList {
 	public:
-		SkipList() : max_level_(0), node_count_(0) {
-			header_ = new Node<SortField, Value>(MAX_LEVEL, SortField(), Value());
-			footer_ = new Node<SortField, Value>(0, SortField(), Value());
-			for (int i = 0; i < MAX_LEVEL; i++)
-				header_->level_[i].forward = footer_;
-		};
-
-		~SkipList() {
-			clear();
-			delete header_;
-			delete footer_;
-		};
+		SkipList();
+		~SkipList();
 
 		const Node<SortField, Value>* find(const SortField& sort_field, int* rank = nullptr) const;
 		const Node<SortField, Value>* at(int rank) const;
-		const Node<SortField, Value>* begin() const {
-			return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
-		}
+		const Node<SortField, Value>* begin() const;
 		const Node<SortField, Value>* back() const;
 		bool insert(const SortField& sort_field, const Value& value);
 		bool remove(const SortField& sort_field);
+		void clear();
+
 		int max_level() const { return max_level_; };
 		int size() const { return node_count_; };
 
-		//清空跳跃表，注意头节点和尾节点会保留
-		void clear() {
-			auto p = header_->level_[0].forward;
-			while (p != footer_) {
-				auto q = p->level_[0].forward;
-				delete p;
-				p = q;
-			}
-			for (int i = 0; i < MAX_LEVEL; i++) {
-				header_->level_[i].forward = footer_;
-				header_->level_[i].span = 0;
-			}
-			node_count_ = 0;
-			max_level_ = 0;
-		}
-
 	private:
-		Node<SortField, Value>* CreateNode(const SortField& sort_field, const Value& value) const {
-			int nodeLevel = GetRandomLevel();
-			if (node_count_ == 0) {
-				nodeLevel = 1;
-			} else if (nodeLevel > max_level_ + 1) {
-				nodeLevel = max_level_ + 1;
-			}
-			auto node = new Node<SortField, Value>(nodeLevel, sort_field, value);
-			return node;
-		}
-
-		//随机生成一个level
-		static int GetRandomLevel() {
-			int level = 1;
-			while (level < MAX_LEVEL && Random::RandomInt(0, 1) == 0) {
-				level++;
-			}
-			return level;
-		}
+		Node<SortField, Value>* CreateNode(const SortField& sort_field, const Value& value) const;
+		static int CreateRandomLevel();
 
 	private:
 		int max_level_;						//从1开始
@@ -75,6 +32,21 @@ namespace skiplist {
 		Node<SortField, Value>* footer_;
 		static const int MAX_LEVEL = 32;	//最高层数，支持42亿个元素Log(N)的时间复杂度
 	};
+
+	template<typename SortField, typename Value>
+	SkipList<SortField, Value>::SkipList() : max_level_(0), node_count_(0) {
+		header_ = new Node<SortField, Value>(MAX_LEVEL, SortField(), Value());
+		footer_ = new Node<SortField, Value>(0, SortField(), Value());
+		for (int i = 0; i < MAX_LEVEL; i++)
+			header_->level_[i].forward = footer_;
+	}
+
+	template<typename SortField, typename Value>
+	SkipList<SortField, Value>::~SkipList() {
+		clear();
+		delete header_;
+		delete footer_;
+	}
 
 	template<typename SortField, typename Value>
 	const Node<SortField, Value>* SkipList<SortField, Value>::find(const SortField& sort_field, int* rank) const {
@@ -100,7 +72,7 @@ namespace skiplist {
 		if (node->sort_field_ != sort_field)
 			return nullptr;
 		return node;
-	};
+	}
 
 	//获取排行榜第rank名，从1开始
 	template<typename SortField, typename Value>
@@ -129,6 +101,11 @@ namespace skiplist {
 		if (cur_rank != rank)
 			return nullptr;
 		return node;
+	}
+
+	template<typename SortField, typename Value>
+	const Node<SortField, Value>* SkipList<SortField, Value>::begin() const {
+		return header_->level_[0].forward == footer_ ? nullptr : header_->level_[0].forward;
 	}
 
 	//获取最后一个节点
@@ -199,7 +176,7 @@ namespace skiplist {
 
 		++node_count_;
 		return true;
-	};
+	}
 
 	template<typename SortField, typename Value>
 	bool SkipList<SortField, Value>::remove(const SortField& sort_field) {
@@ -247,5 +224,45 @@ namespace skiplist {
 
 		--node_count_;
 		return true;
-	};
+	}
+
+	//清空跳跃表，注意头节点和尾节点会保留
+	template<typename SortField, typename Value>
+	void SkipList<SortField, Value>::clear() {
+		auto p = header_->level_[0].forward;
+		while (p != footer_) {
+			auto q = p->level_[0].forward;
+			delete p;
+			p = q;
+		}
+		for (int i = 0; i < MAX_LEVEL; i++) {
+			header_->level_[i].forward = footer_;
+			header_->level_[i].span = 0;
+		}
+		node_count_ = 0;
+		max_level_ = 0;
+	}
+
+	template<typename SortField, typename Value>
+	Node<SortField, Value>* SkipList<SortField, Value>::CreateNode(const SortField& sort_field, const Value& value) const {
+		int nodeLevel = CreateRandomLevel();
+		if (node_count_ == 0) {
+			nodeLevel = 1;
+		}
+		else if (nodeLevel > max_level_ + 1) {
+			nodeLevel = max_level_ + 1;
+		}
+		auto node = new Node<SortField, Value>(nodeLevel, sort_field, value);
+		return node;
+	}
+
+	//随机生成一个level
+	template<typename SortField, typename Value>
+	int SkipList<SortField, Value>::CreateRandomLevel() {
+		int level = 1;
+		while (level < MAX_LEVEL && Random::RandomInt(0, 1) == 0) {
+			level++;
+		}
+		return level;
+	}
 }
