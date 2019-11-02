@@ -14,6 +14,8 @@ SkipList还有一个优势就是实现简单。
 
 其实跳跃表就是在普通单向链表的基础上增加了一些索引，而且这些索引是分层的，从而可以快速地查的到数据。如下是一个典型的跳表:
 
+![](./res/skiplist.jpeg)
+
 <img src="res/skiplist.jpeg" width="741" height="86"/>
 
 ### 查找
