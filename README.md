@@ -16,7 +16,7 @@ SkipList还有一个优势就是实现简单。
 
 ![](./res/skiplist.jpeg)
 
-<img src="res/skiplist.jpeg" width="741" height="86"/>
+<img src="./res/skiplist.jpeg" width="741" height="86"/>
 
 ### 查找
 
