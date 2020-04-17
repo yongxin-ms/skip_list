@@ -221,8 +221,8 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 	std::random_shuffle(vSort.begin(), vSort.end());
 	for (auto itr = vSort.begin(); itr != vSort.end(); ++itr) {
 		auto sort_field = *itr;
-		//auto value = *itr;
-		
+		// auto value = *itr;
+
 		bool suc = skip_list.remove(sort_field);
 		assert(suc);
 
@@ -243,9 +243,8 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 	assert(skip_list.at(1) == nullptr);
 }
 
-
 int main() {
-	skiplist::SkipList<int, int> skip_list;
+	skiplist::SkipList<int, int> skip_list(0, 0);
 	std::cout << "skiplist test now starts..." << std::endl;
 
 	TestInsertTail(skip_list);
@@ -258,8 +257,7 @@ int main() {
 	CreateSkipList(skip_list);
 
 	//测试遍历与查找
-	for (auto node = skip_list.begin(); node != nullptr; node = node->next())
-	{
+	for (auto node = skip_list.begin(); node != nullptr; node = node->next()) {
 		int sort_field = node->sort_field_;
 		int rank = 0;
 		auto search_result = skip_list.find(sort_field, &rank);
@@ -267,8 +265,7 @@ int main() {
 	}
 
 	//从头开始删除
-	while (skip_list.size() > 0)
-	{
+	while (skip_list.size() > 0) {
 		int sort_field = skip_list.begin()->sort_field_;
 		bool removeResult = skip_list.remove(sort_field);
 		assert(removeResult);
@@ -282,5 +279,5 @@ int main() {
 	assert(skip_list.at(1) == nullptr);
 
 	std::cout << "skiplist test now finished..." << std::endl;
-    return 0;
+	return 0;
 }
