@@ -244,7 +244,7 @@ void TestRemoveRandom(skiplist::SkipList<int, int>& skip_list) {
 }
 
 int main() {
-	skiplist::SkipList<int, int> skip_list(0, 0);
+	skiplist::SkipList<int, int> skip_list;
 	std::cout << "skiplist test now starts..." << std::endl;
 
 	TestInsertTail(skip_list);

@@ -7,6 +7,21 @@ namespace skiplist {
 template <typename SortField, typename Value>
 class SkipList {
 public:
+	SkipList()
+		: max_level_(0)
+		, node_count_(0) {
+		header_ = new Node<SortField, Value>(MAX_LEVEL, SortField(), Value());
+		footer_ = new Node<SortField, Value>(0, SortField(), Value());
+		for (int i = 0; i < MAX_LEVEL; i++)
+			header_->level_[i].forward = footer_;
+	};
+
+	//
+	// 在一些场景下，sort_field可能没有不带参数的构造函数
+	// 这个时候需要从外界传入头节点和尾节点所使用的sort_field和value
+	// 其实对于跳跃表自身来说，这两个字段并不会真正“用到”
+	//
+
 	SkipList(const SortField& sort_field, const Value& value)
 		: max_level_(0)
 		, node_count_(0) {
